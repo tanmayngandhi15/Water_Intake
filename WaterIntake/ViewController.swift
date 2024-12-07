@@ -17,9 +17,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
+        view.addTapGestureToDismissKeyboard()
     }
 
     @IBAction func btn_login(_ sender: UIButton) {
@@ -39,7 +37,12 @@ class ViewController: UIViewController {
             self.displayAlert("Please check Username & Password.")
         } else {
             
-            UserDefaults.standard.setValue(username, forKey: "LoginName")
+            // Save the login state
+                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+            
+            UserDefaults.standard.set(username, forKey: "LoginName")
+            
+            NotificationManager.shared.setNotification(userName: username) // Start every hr Notification
             
             let storyboard: UIStoryboard = UIStoryboard(name: "HomeStoryboard", bundle: nil)
             

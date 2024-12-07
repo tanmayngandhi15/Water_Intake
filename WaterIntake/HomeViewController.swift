@@ -21,27 +21,20 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var btn_logOut: UIButton!
     
+    let loginName = UserDefaults.standard.string(forKey: "LoginName")
+   
     var arrDailyGoals: [DailyGoals] = []
     
     let dailyMaxIntake = Double(WaterIntakeViewModel().sliderMaxValue) // ml
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupUI()
-        
-        NotificationManager.shared.setNotification() // Start every hr Notification
-        
+
         configure() // Configure the TableView
 
-        loadDailyGoals(for: getCurrDateString()) // Fetch Dailys Records as per current Date
-    }
-    
-    func getCurrDateString() -> String {
-        let date = Date()
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "yyyy-MM-dd"
-        return outputFormatter.string(from: date)
+        loadDailyGoals(for: Date().getCurrDateString(), username: loginName) // Fetch Dailys Records as per current Date
     }
     
     func setupUI() {
@@ -83,8 +76,14 @@ class HomeViewController: UIViewController {
         self.present(addViewController, animated: true, completion: nil)
     }
     
-    func loadDailyGoals(for date: String) {
-        if let records = DailyGoalDataManager.shared.fetchDailyGoals(date) {
+    func loadDailyGoals(for date: String, username name: String?) {
+        
+        guard let name = loginName else {
+            displayAlert("Please login again.")
+            return
+        }
+        
+        if let records = DailyGoalDataManager.shared.fetchDailyGoals(date, name) {
                 arrDailyGoals = records
                 let totalWaterIntake = DailyGoalDataManager.shared.calculateTotalWaterIntake(from: records)
                 setWaterMeter(totalWaterIntake)

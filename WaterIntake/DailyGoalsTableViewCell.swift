@@ -35,6 +35,8 @@ class DailyGoalsTableViewCell: UITableViewCell {
         let type = (viewModel.containerType == "GLASS") ? "water-glass" : "water-bottle"
 
         iv_container.image = UIImage(named: type)
+        
+        vw_subView.layer.cornerRadius = vw_subView.bounds.height / 9
     }
     
     override func awakeFromNib() {
@@ -45,8 +47,6 @@ class DailyGoalsTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        
-        vw_subView.layer.cornerRadius = vw_subView.bounds.height / 9
         // Configure the view for the selected state
     }
     

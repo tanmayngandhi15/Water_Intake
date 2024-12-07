@@ -68,11 +68,12 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
                let goalToDelete = self.arrDailyGoals[indexPath.row]
                 
-                let isDeleted = self.deleteDailyGoal(goalToDelete)
+                let isDeleted = DailyGoalDataManager.shared.deleteDailyGoal(goalToDelete)
                     if isDeleted {
                         
                         self.showAlert(title: "Success", message: "Goal was successfully deleted.") {
-                            self.loadDailyGoals(for: self.getCurrDateString())
+                            
+                            self.loadDailyGoals(for: Date().getCurrDateString(), username: self.loginName)
                         }
                         
                     } else {
@@ -83,25 +84,5 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
             }
             let swipeConfiguration = UISwipeActionsConfiguration(actions: [delete, edit])
             return swipeConfiguration
-        }
-    
-    func deleteDailyGoal(_ goal: DailyGoals) -> Bool {
-        do {
-            // Delete the goal from the context
-            PersistentStorage.shared.context.delete(goal)
-            
-            // Save the context after deletion
-            try PersistentStorage.shared.context.save()
-            
-            print("Goal deleted successfully")
-            return true
-        } catch let err {
-            
-            // Log the error and return false in case of failure
-            debugPrint("Error deleting goal: \(err)")
-            return false
-        }
-    }
-
-    
+        } 
 }

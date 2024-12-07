@@ -31,6 +31,73 @@ class AddWaterIntakeViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupUI()
+        
+        if let goal = goal {
+            
+            if let waterQty = goal.waterIntake {
+                slider.value = Float(waterQty) ?? waterIntakeViewModel.sliderMinValue
+                sliderStart.text = "\(waterQty)ml"
+                
+                let selectType = (goal.containerType == "GLASS") ? 0 : 1
+ 
+                waterIntakeSegment.selectedSegmentIndex = selectType
+ 
+                txtML.text = "\(waterQty)"
+                btnAdd.setTitle("UPDATE", for: .normal)
+            }
+        }
+        
+        view.addTapGestureToDismissKeyboard()
+    }
+    
+    @IBAction func btnAdd(_ sender: UIButton)
+    {
+         
+        if slider.value <= 0 {
+            
+            displayAlert("Please select a valid water intake value.")
+            return
+        }
+        
+        let selectedSegment = waterIntakeSegment.selectedSegmentIndex
+        let intWaterValue = Int(slider.value)
+        let waterValue = String(intWaterValue)
+        let type = (selectedSegment == 0) ? "GLASS" : "BOTTLE"
+        
+        if let goal = goal {
+
+            if DailyGoalDataManager.shared.updateDailyGoal(oldGoal: goal, containerTyp: type, waterQty: waterValue) {
+                
+                showAlert(title: "Success", message: "Record has been updated!") {
+                    self.jumpToHome()
+                }
+            }
+            
+        } else {
+            
+            guard let name = loginName else {
+                displayAlert("Please login again.")
+                return
+            }
+
+            if DailyGoalDataManager.shared.createDailyGoal(containerTyp: type, waterQty: String(waterValue), loginName: name) {
+                    
+                    showAlert(title: "Success", message: "Record has been added!") {
+                        self.jumpToHome()
+                    }
+                }
+        }
+        
+    }
+    
+    @IBAction func btnSlider(_ sender: UISlider) {
+        
+        updateLabel()
+    }
+
+    func setupUI() {
+        
         txtML.delegate = self
         
         slider.minimumValue = waterIntakeViewModel.sliderMinValue
@@ -53,115 +120,9 @@ class AddWaterIntakeViewController: UIViewController, UITextFieldDelegate {
         
         btnAdd.layer.cornerRadius = 17
         
-        addShadow(to: vw_waterIntake)
+        vw_waterIntake.addShadow()
         
         updateLabel()
-        
-        if let goal = goal {
-            
-            if let waterQty = goal.waterIntake {
-                slider.value = Float(waterQty) ?? waterIntakeViewModel.sliderMinValue
-                sliderStart.text = "\(waterQty)ml"
-                
-                let selectType = (goal.containerType == "GLASS") ? 0 : 1
- 
-                waterIntakeSegment.selectedSegmentIndex = selectType
- 
-                txtML.text = "\(waterQty)"
-                btnAdd.setTitle("UPDATE", for: .normal)
-            }
-        }
-        
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
-    }
-    
-    @IBAction func btnAdd(_ sender: UIButton)
-    {
-         
-        if slider.value <= 0 {
-            showAlert(title: "Invalid Input", message: "Please select a valid water intake value.") {
-                ()
-            }
-            return
-        }
-        
-        let selectedSegment = waterIntakeSegment.selectedSegmentIndex
-        let intWaterValue = Int(slider.value)
-        let waterValue = String(intWaterValue)
-        let type = (selectedSegment == 0) ? "GLASS" : "BOTTLE"
-        
-        if let goal = goal {
-
-            if updateDailyGoal(oldGoal: goal, containerTyp: type, waterQty: waterValue) {
-                showAlert(title: "Success", message: "Record has been updated!") {
-                    self.jumpToHome()
-                }
-            }
-            
-        } else {
-
-                if createDailyGoal(containerTyp: type, waterQty: String(waterValue)) {
-                    
-                    showAlert(title: "Success", message: "Record has been added!") {
-                        self.jumpToHome()
-                    }
-                }
-        }
-        
-    }
-    
-    @IBAction func btnSlider(_ sender: UISlider) {
-        
-        updateLabel()
-    }
-
-    func createDailyGoal(containerTyp: String, waterQty: String) -> Bool {
-        do {
-          
-            let date = Date()
-            let outputFormatter = DateFormatter()
-            outputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            let formattedDate = outputFormatter.string(from: date) // Output: 2024-12-06 09:36:00
-
-            let goal = DailyGoals(context: PersistentStorage.shared.context)
-            goal.username = loginName
-            goal.date = formattedDate
-            goal.containerType = containerTyp
-            goal.waterIntake = waterQty
-
-        
-            try PersistentStorage.shared.saveContext()
-
-            return true
-            
-        } catch let err {
-         
-            debugPrint("Error creating goal: \(err)")
-            
-            return false
-        }
-    }
-
-    
-    func updateDailyGoal( oldGoal: DailyGoals, containerTyp: String, waterQty: String) -> Bool {
-        do {
-            
-            // Update the properties of the goal
-            oldGoal.containerType = containerTyp
-            oldGoal.waterIntake = waterQty
-
-            // Save the context after updating
-            try PersistentStorage.shared.context.save()
-            
-            print("Goal updated successfully")
-            return true
-        } catch let err {
-            // Log the error and return false in case of failure
-            debugPrint("Error updating goal: \(err)")
-            return false
-        }
     }
     
     func updateLabel() {
@@ -175,19 +136,10 @@ class AddWaterIntakeViewController: UIViewController, UITextFieldDelegate {
             if let currentValue = Int(silderText) {
                 sliderStart.text = "\(currentValue)ml"
                 slider.value = Float(currentValue)
+                
         }
-        
     }
-    
-    func addShadow(to view: UIView) {
-        view.layer.cornerRadius = 15
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.5
-        view.layer.shadowOffset = CGSize(width: 3, height: 3)
-        view.layer.shadowRadius = 5
-        view.layer.masksToBounds = false
-    }
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
 
         let currentText = textField.text ?? ""
@@ -196,9 +148,19 @@ class AddWaterIntakeViewController: UIViewController, UITextFieldDelegate {
         // Determine the updated text based on the backspace or added character
         let updatedText = textAsNSString.replacingCharacters(in: range, with: string)
         
-        let waterValue = (updatedText != "") ? updatedText : "0.0"
+        if updatedText.isEmpty {
+                updateSlider("0") // Assuming "0" as the default for empty input
+                txtML.text = "0"
+                return false
+            }
 
-        if Float(waterValue) ?? 0.0 >= slider.minimumValue, Float(waterValue) ?? 0.0 <= slider.maximumValue {
+        let waterValue = Float(updatedText) ?? 0.0
+        
+        // Check if the value is within the valid range
+            let minValue = WaterIntakeViewModel().sliderMinValue
+            let maxValue = WaterIntakeViewModel().sliderMaxValue
+
+        if waterValue >= minValue, waterValue <= maxValue {
 
             updateSlider(updatedText)
             
@@ -211,11 +173,6 @@ class AddWaterIntakeViewController: UIViewController, UITextFieldDelegate {
         
         return true
     }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        print(#function)
-    }
-    
     
     @IBAction func btn_jumpHomePage(_ sender: UIButton) {
         
