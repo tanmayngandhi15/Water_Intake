@@ -9,11 +9,22 @@ import Foundation
 import UserNotifications
 
 class NotificationManager {
+    
     static let shared = NotificationManager()
     
-    private init() {}
-    
-    func setNotification() {
+    func setNotification(userName name: String?) {
+        
+        if let _ = UserDefaults.standard.object(forKey: "hasNotificationSetKey") {
+            
+            return
+        }
+        
+        UserDefaults.standard.set(true, forKey: "hasNotificationSetKey")
+
+        guard let name = name else {
+            print("LoginName not found.")
+            return
+        }
         
         // Request notification permissions
         let center = UNUserNotificationCenter.current()
@@ -24,7 +35,7 @@ class NotificationManager {
                 // Prepare notification content
                 let content = UNMutableNotificationContent()
                 content.title = "Time to Hydrate! 💧"
-                content.body = "It's been an hour. Take a moment to drink a glass of water and stay refreshed!"
+                content.body = "\(name) It's been an hour. Take a moment to drink a glass of water and stay refreshed!"
                 content.sound = .default
                 content.userInfo = ["value": "Data with local notification"]
                 
