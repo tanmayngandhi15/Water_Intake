@@ -132,11 +132,11 @@
                                                             <action selector="btnSlider:" destination="Y6W-OH-hqX" eventType="valueChanged" id="HfO-hB-TXN"/>
                                                         </connections>
                                                     </slider>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="190" translatesAutoresizingMaskIntoConstraints="NO" id="w2B-4b-Y39">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="w2B-4b-Y39">
                                                         <rect key="frame" x="0.0" y="38" width="307" height="17"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0ml" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="46h-U4-OMD">
-                                                                <rect key="frame" x="0.0" y="0.0" width="32" height="17"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="103" height="17"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="17" id="MDy-CO-MmA"/>
                                                                 </constraints>
@@ -144,8 +144,8 @@
                                                                 <color key="textColor" red="0.56470588239999997" green="0.83529411760000005" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1000ml" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r30-yR-H2L">
-                                                                <rect key="frame" x="222" y="0.0" width="85" height="17"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1000ml" textAlignment="right" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r30-yR-H2L">
+                                                                <rect key="frame" x="103" y="0.0" width="204" height="17"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="17" id="WWc-Po-bFK"/>
                                                                 </constraints>
