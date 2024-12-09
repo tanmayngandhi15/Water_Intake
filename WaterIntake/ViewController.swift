@@ -40,7 +40,7 @@ class ViewController: UIViewController {
             // Save the login state
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
             
-            UserDefaults.standard.setValue(username, forKey: "LoginName")
+            UserDefaults.standard.set(username, forKey: "LoginName")
             
             NotificationManager.shared.setNotification(userName: username) // Start every hr Notification
             
